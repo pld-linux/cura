@@ -54,7 +54,7 @@ diff -urN Cura-15.02.1.org/Cura/gui/firmwareInstall.py Cura-15.02.1/Cura/gui/fir
  			filename = getDefaultFirmware(machineIndex)
  		if filename is None:
 -			wx.MessageBox(_("I am sorry, but Cura does not ship with a default firmware for your machine configuration."), _("Firmware update"), wx.OK | wx.ICON_ERROR)
-+            wx.MessageBox(_("I am sorry, but Cura on Fedora does not ship firmware for technical reasons. Please go download it and install it as custom firmware instead."), _("Firmware update"), wx.OK | wx.ICON_ERROR)
++			wx.MessageBox(_("I am sorry, but Cura on Fedora does not ship firmware for technical reasons. Please go download it and install it as custom firmware instead."), _("Firmware update"), wx.OK | wx.ICON_ERROR)
  			self.Destroy()
  			return
  		self._machine_type = profile.getMachineSetting('machine_type', machineIndex)

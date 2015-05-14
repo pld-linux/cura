@@ -26,12 +26,13 @@ BuildRequires:	dos2unix
 BuildRequires:	gettext
 BuildRequires:	python-devel
 Requires:	CuraEngine >= 14.12.1
-Requires:	pypy
+#?
+#Requires:	pypy
 Requires:	python-PyOpenGL
 Requires:	python-numpy
 Requires:	python-power
 Requires:	python-serial
-Requires:	wxPython
+Requires:	python-wxPython
 BuildArch:	noarch
 
 %description

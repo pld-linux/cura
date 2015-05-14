@@ -9,7 +9,7 @@ for i in range(len(sys.argv)):
         sys.argv[i] = os.path.abspath(sys.argv[i])
 
 # change the pwd
-os.chdir("/usr/lib/python2.7/site-packages/")
+os.chdir("/usr/%s/python2.7/site-packages/" % sys.lib)
 
 # start cura
 cura.main()
