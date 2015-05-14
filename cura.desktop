@@ -1,0 +1,9 @@
+
+[Desktop Entry]
+Name=Cura
+GenericName=3D Printer Interface
+Exec=cura
+Icon=/usr/share/pixmaps/cura.ico
+Terminal=false
+Type=Application
+Categories=Graphics;

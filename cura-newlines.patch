@@ -1,0 +1,38 @@
+--- Cura-15.02.1/resources/locale/zh/LC_MESSAGES/Cura.po~	2015-05-14 22:40:18.934776079 +0200
++++ Cura-15.02.1/resources/locale/zh/LC_MESSAGES/Cura.po	2015-05-14 22:40:49.762177833 +0200
+@@ -1679,7 +1679,7 @@
+ "支撑结构类型。\n"
+ "通常使用\"Touching buildplate\"建立支撑 \n"
+ "\n"
+-"选择 None 不会建立支撑\n"
++"选择 None 不会建立支撑"
+ 
+ #: Cura/util/profile.py:192 Cura/util/profile.py:243
+ msgid "Brim"
+@@ -1712,7 +1712,7 @@
+ "(Note that enabling the brim or raft disables the skirt)"
+ msgstr ""
+ "Brim会在模型底边周围增加数圈薄层,推荐使用这个选项\n"
+-"Raft会打印模型前打印一个网状底座\n"
++"Raft会打印模型前打印一个网状底座"
+ 
+ #: Cura/util/profile.py:193
+ msgid "Both"
+@@ -2565,7 +2565,7 @@
+ "个\n"
+ "选项会打开会则会不理会这些洞.这个选项一般是你所不需要的,除非在出现切片失败"
+ "的\n"
+-"情况下,你可能需要打开它.\n"
++"情况下,你可能需要打开它."
+ 
+ #: Cura/util/profile.py:258
+ msgid "Extensive stitching"
+@@ -2762,7 +2762,7 @@
+ msgstr ""
+ "GCode生成的风格\n"
+ "RepRap一般是5D GCode,兼容于Marlin/Sprinter固件\n"
+-"UltiGCode是一种GCode派生,把部分配置放到里机器里,而不是切片软件\n"
++"UltiGCode是一种GCode派生,把部分配置放到里机器里,而不是切片软件"
+ 
+ #: Cura/util/profile.py:533
+ msgid "Extruder count"

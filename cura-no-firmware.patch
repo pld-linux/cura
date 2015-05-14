@@ -1,0 +1,81 @@
+diff -urN Cura-15.02.1.org/Cura/gui/firmwareInstall.py Cura-15.02.1/Cura/gui/firmwareInstall.py
+--- Cura-15.02.1.org/Cura/gui/firmwareInstall.py	2015-02-18 21:22:48.000000000 +0100
++++ Cura-15.02.1/Cura/gui/firmwareInstall.py	2015-05-14 22:37:20.963865640 +0200
+@@ -17,47 +17,6 @@
+ from Cura.util import resources
+ 
+ def getDefaultFirmware(machineIndex = None):
+-	machine_type = profile.getMachineSetting('machine_type', machineIndex)
+-	extruders = profile.getMachineSettingFloat('extruder_amount', machineIndex)
+-	heated_bed = profile.getMachineSetting('has_heated_bed', machineIndex) == 'True'
+-	baudrate = 250000
+-	if sys.platform.startswith('linux'):
+-		baudrate = 115200
+-	if machine_type == 'ultimaker':
+-		name = 'MarlinUltimaker'
+-		if extruders > 2:
+-			return None
+-		if heated_bed:
+-			name += '-HBK'
+-		name += '-%d' % (baudrate)
+-		if extruders > 1:
+-			name += '-dual'
+-		return resources.getPathForFirmware(name + '.hex')
+-
+-	if machine_type == 'ultimaker_plus':
+-		name = 'MarlinUltimaker-UMOP-%d' % (baudrate)
+-		if extruders > 2:
+-			return None
+-		if extruders > 1:
+-			name += '-dual'
+-		return resources.getPathForFirmware(name + '.hex')
+-
+-	if machine_type == 'ultimaker2':
+-		if extruders > 2:
+-			return None
+-		if extruders > 1:
+-			return resources.getPathForFirmware("MarlinUltimaker2-dual.hex")
+-		return resources.getPathForFirmware("MarlinUltimaker2.hex")
+-	if machine_type == 'ultimaker2go':
+-		return resources.getPathForFirmware("MarlinUltimaker2go.hex")
+-	if machine_type == 'ultimaker2extended':
+-		if extruders > 2:
+-			return None
+-		if extruders > 1:
+-			return resources.getPathForFirmware("MarlinUltimaker2extended-dual.hex")
+-		return resources.getPathForFirmware("MarlinUltimaker2extended.hex")
+-	if machine_type == 'Witbox':
+-		return resources.getPathForFirmware("MarlinWitbox.hex")
+ 	return None
+ 
+ class InstallFirmware(wx.Dialog):
+@@ -68,7 +27,7 @@
+ 		if filename is None:
+ 			filename = getDefaultFirmware(machineIndex)
+ 		if filename is None:
+-			wx.MessageBox(_("I am sorry, but Cura does not ship with a default firmware for your machine configuration."), _("Firmware update"), wx.OK | wx.ICON_ERROR)
++            wx.MessageBox(_("I am sorry, but Cura on Fedora does not ship firmware for technical reasons. Please go download it and install it as custom firmware instead."), _("Firmware update"), wx.OK | wx.ICON_ERROR)
+ 			self.Destroy()
+ 			return
+ 		self._machine_type = profile.getMachineSetting('machine_type', machineIndex)
+diff -urN Cura-15.02.1.org/Cura/gui/mainWindow.py Cura-15.02.1/Cura/gui/mainWindow.py
+--- Cura-15.02.1.org/Cura/gui/mainWindow.py	2015-02-18 21:22:48.000000000 +0100
++++ Cura-15.02.1/Cura/gui/mainWindow.py	2015-05-14 22:37:36.827577248 +0200
+@@ -375,7 +375,6 @@
+ 			self.splitter.SetSashPosition(self.normalSashPos, True)
+ 			# Enabled sash
+ 			self.splitter.SetSashSize(4)
+-		self.defaultFirmwareInstallMenuItem.Enable(firmwareInstall.getDefaultFirmware() is not None)
+ 		if profile.getMachineSetting('machine_type').startswith('ultimaker2'):
+ 			self.bedLevelWizardMenuItem.Enable(False)
+ 			self.headOffsetWizardMenuItem.Enable(False)
+@@ -483,9 +482,6 @@
+ 		#Add tools for machines.
+ 		self.machineMenu.AppendSeparator()
+ 
+-		self.defaultFirmwareInstallMenuItem = self.machineMenu.Append(-1, _("Install default firmware..."))
+-		self.Bind(wx.EVT_MENU, self.OnDefaultMarlinFirmware, self.defaultFirmwareInstallMenuItem)
+-
+ 		i = self.machineMenu.Append(-1, _("Install custom firmware..."))
+ 		self.Bind(wx.EVT_MENU, self.OnCustomFirmware, i)
+ 
