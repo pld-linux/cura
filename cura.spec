@@ -1,7 +1,7 @@
 Summary:	3D printer control software
 Name:		cura
 Version:	15.02.1
-Release:	0.1
+Release:	1
 Group:		Applications/Engineering
 # Code is AGPLv3
 # Icons AGPLv3 https://github.com/daid/Cura/issues/231#issuecomment-12209683
@@ -59,7 +59,7 @@ dos2unix resources/example/Attribution.txt
 sed -i 's/REPLACE_THIS_IN_SPEC/%{version}/' Cura/util/version.py
 
 mv resources/locale/{zh,zh_CN}
-rm -rf resources/locale/po
+rm -rf resources/locale/{en,po}
 
 %build
 # rebuild locales
