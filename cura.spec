@@ -8,32 +8,29 @@ Group:		Applications/Engineering
 # Example models are CC-BY-SA
 # TweakAtZ.py is CC-BY-SA
 License:	AGPLv3 and CC-BY-SA
-URL:		http://daid.github.com/Cura/
 Source0:	https://github.com/daid/Cura/archive/%{version}.tar.gz
 # Source0-md5:	f41ba365e5b98907cf55fc70e056c2e8
 Source1:	%{name}
 Source2:	%{name}.desktop
-# UltimakerPlatforms STLs were stripped from the tarball, don't crash because of that
 Patch0:		%{name}-dont-show-nc-stls.patch
-# Use system paths
 Patch1:		%{name}-system-paths.patch
-# Rework the logic of determining the version (didn't work)
 Patch2:		%{name}-version.patch
 Patch3:		%{name}-no-firmware.patch
 Patch4:		%{name}-newlines.patch
+URL:		http://daid.github.com/Cura/
 BuildRequires:	desktop-file-utils
 BuildRequires:	dos2unix
 BuildRequires:	gettext
-BuildRequires:	python-devel
+BuildRequires:	rpm-pythonprov
+BuildRequires:	rpmbuild(macros) >= 1.219
 Requires:	CuraEngine >= 14.12.1
-#?
-#Requires:	pypy
 Requires:	python-PyOpenGL
 Requires:	python-numpy
 Requires:	python-power
 Requires:	python-serial
 Requires:	python-wxPython
 BuildArch:	noarch
+BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
 Cura is a project which aims to be an single software solution for 3D
@@ -68,36 +65,32 @@ rm -rf resources/locale/po
 # rebuild locales
 cd resources/locale
 rm *.in *.pot
-for FILE in *
-  do msgfmt $FILE/LC_MESSAGES/Cura.po -o $FILE/LC_MESSAGES/Cura.mo
-  rm $FILE/LC_MESSAGES/Cura.po
+for FILE in *; do
+	msgfmt $FILE/LC_MESSAGES/Cura.po -o $FILE/LC_MESSAGES/Cura.mo
+	rm $FILE/LC_MESSAGES/Cura.po
 done
-cd -
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura
-install -d $RPM_BUILD_ROOT%{_datadir}/%{name}/firmware
-install -d $RPM_BUILD_ROOT%{_pixmapsdir}
-install -d $RPM_BUILD_ROOT%{_localedir}
-install -d $RPM_BUILD_ROOT%{_bindir}
+install -d $RPM_BUILD_ROOT{%{_bindir},%{py_sitescriptdir}/Cura,%{_datadir}/%{name}/firmware,%{_pixmapsdir},%{_localedir}}
 
-cp -apr Cura/* $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura
-rm -rf $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura/LICENSE
-cp -apr resources/* $RPM_BUILD_ROOT%{_datadir}/%{name}
-cp -apr plugins $RPM_BUILD_ROOT%{_datadir}/%{name}
-cp -ap %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}
+cp -a Cura/* $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura
+rm $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura/LICENSE
+cp -a resources/* $RPM_BUILD_ROOT%{_datadir}/%{name}
+cp -a plugins $RPM_BUILD_ROOT%{_datadir}/%{name}
+cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}
 ln -s %{_datadir}/%{name} $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura/resources
 ln -s %{_datadir}/%{name}/%{name}.ico $RPM_BUILD_ROOT%{_pixmapsdir}
 
 # locales
 cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/locale/* $RPM_BUILD_ROOT%{_localedir}
 rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/locale
-ln -s -f %{_localedir}/ $RPM_BUILD_ROOT%{_datadir}/%{name}/ # the app expects the locale folder in here
+ln -sf %{_localedir}/ $RPM_BUILD_ROOT%{_datadir}/%{name}/ # the app expects the locale folder in here
 
 desktop-file-install --dir=$RPM_BUILD_ROOT%{_desktopdir} %{SOURCE2}
 
-%{find_lang} Cura
+%find_lang Cura
+%py_postclean
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -105,8 +98,8 @@ rm -rf $RPM_BUILD_ROOT
 %files -f Cura.lang
 %defattr(644,root,root,755)
 %doc Cura/LICENSE resources/example/Attribution.txt
+%attr(755,root,root) %{_bindir}/%{name}
 %{py_sitescriptdir}/Cura
-%{_datadir}/%{name}
 %{_pixmapsdir}/%{name}.ico
 %{_desktopdir}/%{name}.desktop
-%attr(755,root,root) %{_bindir}/%{name}
+%{_datadir}/%{name}

@@ -1,3 +1,4 @@
+# UltimakerPlatforms STLs were stripped from the tarball, don't crash because of that
 diff -urN Cura-15.02.1.org/Cura/gui/sceneView.py Cura-15.02.1/Cura/gui/sceneView.py
 --- Cura-15.02.1.org/Cura/gui/sceneView.py	2015-02-18 21:22:48.000000000 +0100
 +++ Cura-15.02.1/Cura/gui/sceneView.py	2015-05-14 22:34:56.020409418 +0200

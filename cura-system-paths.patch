@@ -1,3 +1,4 @@
+# Use system paths
 diff --git a/Cura/util/pluginInfo.py b/Cura/util/pluginInfo.py
 index 7290c8b..52fa14b 100644
 --- a/Cura/util/pluginInfo.py
