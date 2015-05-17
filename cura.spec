@@ -20,7 +20,6 @@ Patch4:		%{name}-newlines.patch
 URL:		http://daid.github.com/Cura/
 BuildRequires:	desktop-file-utils
 BuildRequires:	dos2unix
-BuildRequires:	gettext
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
 Requires:	CuraEngine >= 14.12.1
