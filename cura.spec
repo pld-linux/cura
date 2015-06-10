@@ -1,7 +1,7 @@
 Summary:	3D printer control software
 Name:		cura
 Version:	15.02.1
-Release:	1
+Release:	2
 Group:		Applications/Engineering
 # Code is AGPLv3
 # Icons AGPLv3 https://github.com/daid/Cura/issues/231#issuecomment-12209683
@@ -90,6 +90,9 @@ ln -sf %{_localedir}/ $RPM_BUILD_ROOT%{_datadir}/%{name}/ # the app expects the 
 desktop-file-install --dir=$RPM_BUILD_ROOT%{_desktopdir} %{SOURCE2}
 
 %find_lang Cura
+
+%py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
+%py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
 
 %clean
