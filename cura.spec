@@ -1,34 +1,40 @@
 Summary:	3D printer control software
 Name:		cura
-Version:	15.02.1
-Release:	2
+Version:	2.5.0
+Release:	1
+Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
 # Icons AGPLv3 https://github.com/daid/Cura/issues/231#issuecomment-12209683
 # Example models are CC-BY-SA
 # TweakAtZ.py is CC-BY-SA
 License:	AGPLv3 and CC-BY-SA
-Source0:	https://github.com/daid/Cura/archive/%{version}.tar.gz
-# Source0-md5:	f41ba365e5b98907cf55fc70e056c2e8
+Source0:	https://github.com/Ultimaker/Cura/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	ebe1b78c8b9ce77c289a266c9e732dc8
 Source1:	%{name}
-Source2:	%{name}.desktop
-Patch0:		%{name}-dont-show-nc-stls.patch
-Patch1:		%{name}-system-paths.patch
-Patch2:		%{name}-version.patch
-Patch3:		%{name}-no-firmware.patch
-Patch4:		%{name}-newlines.patch
-URL:		http://daid.github.com/Cura/
+Patch0:		plugins-path.patch
+URL:		https://ultimaker.com/en/products/cura-software
+BuildRequires:	cmake
 BuildRequires:	desktop-file-utils
 BuildRequires:	dos2unix
+BuildRequires:	gettext
 BuildRequires:	gettext-tools
+BuildRequires:	python3-Uranium = %{version}
+BuildRequires:	python3-devel
+BuildRequires:	python3-pytest
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.219
-Requires:	CuraEngine >= 14.12.1
-Requires:	python-PyOpenGL
-Requires:	python-numpy
-Requires:	python-power
-Requires:	python-serial
-Requires:	python-wxPython
+Requires:	CuraEngine = %{epoch}:%{version}
+Requires:	Qt5Quick-controls
+Requires:	fonts-TTF-OpenSans
+Requires:	python3-PyOpenGL
+Requires:	python3-PyQt5
+Requires:	python3-numpy
+Requires:	python3-power
+Requires:	python3-savitar
+Requires:	python3-serial
+Requires:	python3-Uranium = %{version}
+Requires:	python3-zeroconf
 BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -43,66 +49,73 @@ editable configuration settings and send this G-Code to the 3D printer
 for printing.
 
 %prep
-%setup -qn Cura-%{version}
+%setup -q -n Cura-%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
 
-# Use free UltimakerHandle.stl instead of UltimakerRobot_support.stl
-FILES=$(grep -Ir "UltimakerRobot_support.stl" . | cut -f1 -d: | sort | uniq | grep -v Attribution.txt | tr '\n' ' ')
-sed -i 's/UltimakerRobot_support.stl/UltimakerHandle.stl/g' $FILES
+# The setup.py is only useful for py2exe, remove it, so noone is tempted to use it
+rm setup.py
 
-dos2unix resources/example/Attribution.txt
+# https://github.com/Ultimaker/Cura/issues/1784
+sed -i 's/Version=1/Version=1.1/' cura.desktop.in
 
-sed -i 's/REPLACE_THIS_IN_SPEC/%{version}/' Cura/util/version.py
+# Upstream installs to lib/python3/dist-packages
+# We want to install to %%{py3_sitescriptdir}
+sed -i 's|lib/python${PYTHON_VERSION_MAJOR}/dist-packages|%(echo %{py3_sitescriptdir} | sed -e s@%{_prefix}/@@)|g' CMakeLists.txt
 
-mv resources/locale/{zh,zh_CN}
-rm -rf resources/locale/{en,po}
+# Wrong end of line encoding
+dos2unix docs/How_to_use_the_flame_graph_profiler.md
+
+# Wrong shebang
+sed -i '1s=^#!%{_bindir}/\(python\|env python\)3*=#!%{__python3}=' cura_app.py
+
+# Invalid locale name ptbr
+# https://github.com/Ultimaker/Uranium/issues/246
+mv resources/i18n/{ptbr,pt_BR}
+sed -i 's/"Language: ptbr\n"/"Language: pt_BR\n"/' resources/i18n/pt_BR/*.po
+
+# Failing test, mixes sets and lists :(
+# Changed in master, not reporting to upstream
+sed -i -e '0,/set()/{s/set()/[]/}' \
+       -e 's/{/[/g' \
+       -e 's/}/]/g' \
+    tests/TestMachineAction.py
 
 %build
-# rebuild locales
-cd resources/locale
-rm *.in *.pot
-for FILE in *; do
-	msgfmt $FILE/LC_MESSAGES/Cura.po -o $FILE/LC_MESSAGES/Cura.mo
-	rm $FILE/LC_MESSAGES/Cura.po
-done
+mkdir build
+cd build
+%{cmake} .. \
+	-DCURA_VERSION:STRING=%{version}
+
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT{%{_bindir},%{py_sitescriptdir}/Cura,%{_datadir}/%{name}/firmware,%{_pixmapsdir},%{_localedir}}
+%{__make} -C build install DESTDIR=$RPM_BUILD_ROOT
 
-cp -a Cura/* $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura
-rm $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura/LICENSE
-cp -a resources/* $RPM_BUILD_ROOT%{_datadir}/%{name}
-cp -a plugins $RPM_BUILD_ROOT%{_datadir}/%{name}
-cp -p %{SOURCE1} $RPM_BUILD_ROOT%{_bindir}
-ln -s %{_datadir}/%{name} $RPM_BUILD_ROOT%{py_sitescriptdir}/Cura/resources
-ln -s %{_datadir}/%{name}/%{name}.ico $RPM_BUILD_ROOT%{_pixmapsdir}
+# Sanitize the location of locale files
+mv $RPM_BUILD_ROOT%{_datadir}/{cura/resources/i18n,locale}
+ln -s ../../locale $RPM_BUILD_ROOT%{_datadir}/cura/resources/i18n
+rm $RPM_BUILD_ROOT%{_localedir}/*/*.po
+rm $RPM_BUILD_ROOT%{_localedir}/*.pot
 
-# locales
-cp -a $RPM_BUILD_ROOT%{_datadir}/%{name}/locale/* $RPM_BUILD_ROOT%{_localedir}
-rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/locale
-ln -sf %{_localedir}/ $RPM_BUILD_ROOT%{_datadir}/%{name}/ # the app expects the locale folder in here
-
-desktop-file-install --dir=$RPM_BUILD_ROOT%{_desktopdir} %{SOURCE2}
-
-%find_lang Cura
+# Unbundle fonts
+rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts/
+ln -s %{_datadir}/fonts/open-sans/ $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts
 
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_postclean
 
+%find_lang cura --all-name
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files -f Cura.lang
+%files -f cura.lang
 %defattr(644,root,root,755)
-%doc Cura/LICENSE resources/example/Attribution.txt
 %attr(755,root,root) %{_bindir}/%{name}
-%{py_sitescriptdir}/Cura
-%{_pixmapsdir}/%{name}.ico
+%{py3_sitescriptdir}/cura
 %{_desktopdir}/%{name}.desktop
 %{_datadir}/%{name}
+%{_datadir}/appdata/cura.appdata.xml
+%{_datadir}/mime/packages/cura.xml

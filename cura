@@ -1,15 +1,8 @@
 #!/usr/bin/python
 import os
-import sys
+os.environ['GDK_BACKEND'] = 'x11'
+
 import Cura.cura as cura
 
-# Make all paths absolute, we are gonna change the pwd
-for i in range(len(sys.argv)):
-    if os.path.exists(sys.argv[i]):
-        sys.argv[i] = os.path.abspath(sys.argv[i])
 
-# change the pwd
-os.chdir("/usr/%s/python2.7/site-packages/" % sys.lib)
-
-# start cura
 cura.main()
