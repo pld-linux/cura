@@ -1,3 +1,6 @@
+#
+# TODO: find out why all Ultimaker printers later than 2 cannot be added
+#
 Summary:	3D printer control software
 Name:		cura
 Version:	2.5.0
