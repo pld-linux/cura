@@ -4,7 +4,7 @@
 Summary:	3D printer control software
 Name:		cura
 Version:	2.5.0
-Release:	1
+Release:	2
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
@@ -74,7 +74,10 @@ sed -i '1s=^#!%{_bindir}/\(python\|env python\)3*=#!%{__python3}=' cura_app.py
 # Invalid locale name ptbr
 # https://github.com/Ultimaker/Uranium/issues/246
 mv resources/i18n/{ptbr,pt_BR}
-sed -i 's/"Language: ptbr\n"/"Language: pt_BR\n"/' resources/i18n/pt_BR/*.po
+sed -i 's/"Language: ptbr\\n"/"Language: pt_BR\\n"/' resources/i18n/pt_BR/*.po
+
+mv resources/i18n/{jp,ja}
+sed -i 's/"Language: jp\\n"/"Language: ja\\n"/' resources/i18n/ja/*.po
 
 # Failing test, mixes sets and lists :(
 # Changed in master, not reporting to upstream
