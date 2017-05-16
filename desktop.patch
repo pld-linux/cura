@@ -1,0 +1,22 @@
+From 47e1b2a22a55c381ca1f9ee0f1e8bb69d0ee0b19 Mon Sep 17 00:00:00 2001
+From: awhiemstra <a.hiemstra@ultimaker.com>
+Date: Wed, 3 May 2017 15:55:11 +0200
+Subject: [PATCH] Remove Version field from Desktop file
+
+Apparently, it is not a required field and we specify an incorrect version.
+
+See also https://github.com/Ultimaker/Cura/issues/1784
+---
+ packaging/cura.desktop | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/cura.desktop.in b/packaging/cura.desktop.in
+index f7ca1ed..07de903 100755
+--- a/cura.desktop.in
++++ b/cura.desktop.in
+@@ -1,5 +1,4 @@
+ [Desktop Entry]
+-Version=1
+ Name=Cura
+ Name[de]=Cura
+ GenericName=3D Printing Software

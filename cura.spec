@@ -1,10 +1,7 @@
-#
-# TODO: find out why all Ultimaker printers later than 2 cannot be added
-#
 Summary:	3D printer control software
 Name:		cura
 Version:	2.5.0
-Release:	3
+Release:	4
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
@@ -17,10 +14,12 @@ Source0:	https://github.com/Ultimaker/Cura/archive/%{version}/%{name}-%{version}
 Source1:	https://github.com/Ultimaker/fdm_materials/archive/%{version}/fdm_materials-%{version}.tar.gz
 # Source1-md5:	bf8f25394273d7b6333a856b6a1c94ce
 Patch0:		plugins-path.patch
+Patch1:		desktop.patch
+Patch2:		locale.patch
+Patch3:		test.patch
 URL:		https://ultimaker.com/en/products/cura-software
 BuildRequires:	cmake
 BuildRequires:	desktop-file-utils
-BuildRequires:	dos2unix
 BuildRequires:	gettext
 BuildRequires:	gettext-tools
 BuildRequires:	python3-Uranium = %{version}
@@ -55,37 +54,23 @@ for printing.
 %prep
 %setup -q -n Cura-%{version} -a1
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+
+# Invalid locale names ptbr and jp
+%{__mv} resources/i18n/{ptbr,pt_BR}
+%{__mv} resources/i18n/{jp,ja}
 
 # The setup.py is only useful for py2exe, remove it, so noone is tempted to use it
-rm setup.py
-
-# https://github.com/Ultimaker/Cura/issues/1784
-sed -i 's/Version=1/Version=1.1/' cura.desktop.in
+%{__rm} setup.py
 
 # Upstream installs to lib/python3/dist-packages
-# We want to install to %%{py3_sitescriptdir}
-sed -i 's|lib/python${PYTHON_VERSION_MAJOR}/dist-packages|%(echo %{py3_sitescriptdir} | sed -e s@%{_prefix}/@@)|g' CMakeLists.txt
-
-# Wrong end of line encoding
-dos2unix docs/How_to_use_the_flame_graph_profiler.md
+# We want to install to %{py3_sitescriptdir}
+%{__sed} -i 's|lib/python${PYTHON_VERSION_MAJOR}/dist-packages|%(echo %{py3_sitescriptdir} | sed -e s@%{_prefix}/@@)|g' CMakeLists.txt
 
 # Wrong shebang
-sed -i '1s=^#!%{_bindir}/\(python\|env python\)3*=#!%{__python3}=' cura_app.py
-
-# Invalid locale name ptbr
-# https://github.com/Ultimaker/Uranium/issues/246
-mv resources/i18n/{ptbr,pt_BR}
-sed -i 's/"Language: ptbr\\n"/"Language: pt_BR\\n"/' resources/i18n/pt_BR/*.po
-
-mv resources/i18n/{jp,ja}
-sed -i 's/"Language: jp\\n"/"Language: ja\\n"/' resources/i18n/ja/*.po
-
-# Failing test, mixes sets and lists :(
-# Changed in master, not reporting to upstream
-sed -i -e '0,/set()/{s/set()/[]/}' \
-       -e 's/{/[/g' \
-       -e 's/}/]/g' \
-    tests/TestMachineAction.py
+%{__sed} -i '1s=^#!%{_bindir}/\(python\|env python\)3*=#!%{__python3}=' cura_app.py
 
 %build
 mkdir build
@@ -109,14 +94,14 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C fdm_materials-%{version}/build install DESTDIR=$RPM_BUILD_ROOT
 
 # Sanitize the location of locale files
-mv $RPM_BUILD_ROOT%{_datadir}/{cura/resources/i18n,locale}
+%{__mv} $RPM_BUILD_ROOT%{_datadir}/{cura/resources/i18n,locale}
 ln -s ../../locale $RPM_BUILD_ROOT%{_datadir}/cura/resources/i18n
-rm $RPM_BUILD_ROOT%{_localedir}/*/*.po
-rm $RPM_BUILD_ROOT%{_localedir}/*.pot
+%{__rm} $RPM_BUILD_ROOT%{_localedir}/*/*.po
+%{__rm} $RPM_BUILD_ROOT%{_localedir}/*.pot
 
 # Unbundle fonts
-rm -rf $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts/
-ln -s %{_datadir}/fonts/open-sans/ $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts/
+ln -s %{_datadir}/fonts/TTF $RPM_BUILD_ROOT%{_datadir}/%{name}/resources/themes/cura/fonts
 
 %py_ocomp $RPM_BUILD_ROOT%{py_sitescriptdir}
 %py_comp $RPM_BUILD_ROOT%{py_sitescriptdir}
