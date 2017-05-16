@@ -4,7 +4,7 @@
 Summary:	3D printer control software
 Name:		cura
 Version:	2.5.0
-Release:	2
+Release:	3
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
@@ -14,7 +14,8 @@ Group:		Applications/Engineering
 License:	AGPLv3 and CC-BY-SA
 Source0:	https://github.com/Ultimaker/Cura/archive/%{version}/%{name}-%{version}.tar.gz
 # Source0-md5:	ebe1b78c8b9ce77c289a266c9e732dc8
-Source1:	%{name}
+Source1:	https://github.com/Ultimaker/fdm_materials/archive/%{version}/fdm_materials-%{version}.tar.gz
+# Source1-md5:	bf8f25394273d7b6333a856b6a1c94ce
 Patch0:		plugins-path.patch
 URL:		https://ultimaker.com/en/products/cura-software
 BuildRequires:	cmake
@@ -52,7 +53,7 @@ editable configuration settings and send this G-Code to the 3D printer
 for printing.
 
 %prep
-%setup -q -n Cura-%{version}
+%setup -q -n Cura-%{version} -a1
 %patch0 -p1
 
 # The setup.py is only useful for py2exe, remove it, so noone is tempted to use it
@@ -94,9 +95,18 @@ cd build
 
 %{__make}
 
+cd ../fdm_materials-%{version}
+mkdir build
+cd build
+%{cmake} ..
+
+%{__make}
+
 %install
 rm -rf $RPM_BUILD_ROOT
+
 %{__make} -C build install DESTDIR=$RPM_BUILD_ROOT
+%{__make} -C fdm_materials-%{version}/build install DESTDIR=$RPM_BUILD_ROOT
 
 # Sanitize the location of locale files
 mv $RPM_BUILD_ROOT%{_datadir}/{cura/resources/i18n,locale}
