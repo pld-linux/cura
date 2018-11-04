@@ -1,10 +1,9 @@
 --- Cura-2.5.0/cura/CuraApplication.py.orig	2017-04-21 13:30:29.000000000 +0200
 +++ Cura-2.5.0/cura/CuraApplication.py	2017-05-14 11:14:40.735151508 +0200
-@@ -454,7 +454,7 @@
-     def _loadPlugins(self):
-         self._plugin_registry.addType("profile_reader", self._addProfileReader)
-         self._plugin_registry.addType("profile_writer", self._addProfileWriter)
--        self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "lib", "cura"))
+@@ -454,6 +454,7 @@
+             lib_suffixes = {""}
+         for suffix in lib_suffixes:
+             self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "lib" + suffix, "cura"))
 +        self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "share", "cura"))
          if not hasattr(sys, "frozen"):
              self._plugin_registry.addPluginLocation(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "plugins"))
@@ -15,7 +14,7 @@
  install(DIRECTORY resources
          DESTINATION ${CMAKE_INSTALL_DATADIR}/cura)
  install(DIRECTORY plugins
--        DESTINATION lib/cura)
+-        DESTINATION lib${LIB_SUFFIX}/cura)
 +        DESTINATION ${CMAKE_INSTALL_DATADIR}/cura)
  if(NOT APPLE AND NOT WIN32)
      install(FILES cura_app.py
