@@ -1,7 +1,7 @@
 Summary:	3D printer control software
 Name:		cura
 Version:	3.5.1
-Release:	1
+Release:	2
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
