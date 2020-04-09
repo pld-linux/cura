@@ -1,7 +1,7 @@
 Summary:	3D printer control software
 Name:		cura
-Version:	3.5.1
-Release:	3
+Version:	4.5.0
+Release:	1
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
@@ -10,9 +10,9 @@ Group:		Applications/Engineering
 # TweakAtZ.py is CC-BY-SA
 License:	AGPLv3 and CC-BY-SA
 Source0:	https://github.com/Ultimaker/Cura/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	a8b1de1bb8cfc043aa1d742f2cc78911
+# Source0-md5:	b02b95a4669110cff62f96e1bb00b1b5
 Source1:	https://github.com/Ultimaker/fdm_materials/archive/%{version}/fdm_materials-%{version}.tar.gz
-# Source1-md5:	7d0bcfe67173f8fd616ac5ca55eb815b
+# Source1-md5:	449b2301efb4a4616c5c610bae173d0d
 Patch0:		plugins-path.patch
 URL:		https://ultimaker.com/en/products/cura-software
 BuildRequires:	cmake
@@ -57,12 +57,9 @@ for bad_lang in de_DE es_ES fi_FI fr_FR it_IT ja_JP ko_KR nl_NL pl_PL pt_PT ru_R
 	%{__mv} "resources/i18n/$bad_lang" "resources/i18n/$lang"
 done
 
-# The setup.py is only useful for py2exe, remove it, so noone is tempted to use it
-%{__rm} setup.py
-
 # Upstream installs to lib/python3/dist-packages
 # We want to install to %{py3_sitescriptdir}
-%{__sed} -i 's|lib${LIB_SUFFIX}/python${PYTHON_VERSION_MAJOR}.*/.*-packages|%(echo %{py3_sitescriptdir} | sed -e s@%{_prefix}/@@)|g' CMakeLists.txt
+%{__sed} -i 's|lib${LIB_SUFFIX}/python${Python3_VERSION_MAJOR}.*/.*-packages|%(echo %{py3_sitescriptdir} | sed -e s@%{_prefix}/@@)|g' CMakeLists.txt
 
 # Wrong shebang
 %{__sed} -i '1s=^#!%{_bindir}/\(python\|env python\)3*=#!%{__python3}=' cura_app.py
