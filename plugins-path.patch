@@ -1,16 +1,7 @@
---- Cura-2.5.0/cura/CuraApplication.py.orig	2017-04-21 13:30:29.000000000 +0200
-+++ Cura-2.5.0/cura/CuraApplication.py	2017-05-14 11:14:40.735151508 +0200
-@@ -454,6 +454,7 @@
-             lib_suffixes = {""}
-         for suffix in lib_suffixes:
-             self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "lib" + suffix, "cura"))
-+        self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "share", "cura"))
-         if not hasattr(sys, "frozen"):
-             self._plugin_registry.addPluginLocation(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "plugins"))
-             self._plugin_registry.loadPlugin("ConsoleLogger")
---- Cura-2.5.0/cmake/CuraPluginInstall.cmake~	2018-11-04 14:15:43.000000000 +0100
-+++ Cura-2.5.0/cmake/CuraPluginInstall.cmake	2018-11-04 14:16:18.346958842 +0100
-@@ -84,6 +84,6 @@
+diff -urNp -x '*.orig' Cura-4.5.0.org/cmake/CuraPluginInstall.cmake Cura-4.5.0/cmake/CuraPluginInstall.cmake
+--- Cura-4.5.0.org/cmake/CuraPluginInstall.cmake	2020-02-25 16:16:45.000000000 +0100
++++ Cura-4.5.0/cmake/CuraPluginInstall.cmake	2021-03-03 12:45:56.861128898 +0100
+@@ -84,7 +84,7 @@ foreach(_plugin_json_path ${_plugin_json
          message(STATUS "[+] PLUGIN TO INSTALL: ${_rel_plugin_dir}")
          get_filename_component(_rel_plugin_parent_dir ${_rel_plugin_dir} DIRECTORY)
          install(DIRECTORY ${_rel_plugin_dir}
@@ -19,3 +10,14 @@
                  PATTERN "__pycache__" EXCLUDE
                  PATTERN "*.qmlc" EXCLUDE
                  )
+diff -urNp -x '*.orig' Cura-4.5.0.org/cura/CuraApplication.py Cura-4.5.0/cura/CuraApplication.py
+--- Cura-4.5.0.org/cura/CuraApplication.py	2020-02-25 16:16:45.000000000 +0100
++++ Cura-4.5.0/cura/CuraApplication.py	2021-03-03 12:45:56.861128898 +0100
+@@ -735,6 +735,7 @@ class CuraApplication(QtApplication):
+             lib_suffixes = {""}
+         for suffix in lib_suffixes:
+             self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "lib" + suffix, "cura"))
++        self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "share", "cura"))
+         if not hasattr(sys, "frozen"):
+             self._plugin_registry.addPluginLocation(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "plugins"))
+             self._plugin_registry.loadPlugin("ConsoleLogger")
