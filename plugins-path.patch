@@ -1,23 +1,21 @@
-diff -urNp -x '*.orig' Cura-4.5.0.org/cmake/CuraPluginInstall.cmake Cura-4.5.0/cmake/CuraPluginInstall.cmake
---- Cura-4.5.0.org/cmake/CuraPluginInstall.cmake	2020-02-25 16:16:45.000000000 +0100
-+++ Cura-4.5.0/cmake/CuraPluginInstall.cmake	2021-03-03 12:45:56.861128898 +0100
-@@ -84,7 +84,7 @@ foreach(_plugin_json_path ${_plugin_json
-         message(STATUS "[+] PLUGIN TO INSTALL: ${_rel_plugin_dir}")
+--- Cura-4.13.2/cmake/CuraPluginInstall.cmake.orig	2024-09-27 18:42:08.796126936 +0200
++++ Cura-4.13.2/cmake/CuraPluginInstall.cmake	2024-09-27 18:43:07.885806820 +0200
+@@ -88,7 +88,7 @@ foreach(_plugin_json_path ${_plugin_json
+         endif()
          get_filename_component(_rel_plugin_parent_dir ${_rel_plugin_dir} DIRECTORY)
          install(DIRECTORY ${_rel_plugin_dir}
 -                DESTINATION lib${LIB_SUFFIX}/cura/${_rel_plugin_parent_dir}
-+                DESTINATION ${CMAKE_INSTALL_DATADIR}/cura/${_rel_plugin_parent_dir}
++		DESTINATION ${CMAKE_INSTALL_DATADIR}/cura/${_rel_plugin_parent_dir}
                  PATTERN "__pycache__" EXCLUDE
                  PATTERN "*.qmlc" EXCLUDE
                  )
-diff -urNp -x '*.orig' Cura-4.5.0.org/cura/CuraApplication.py Cura-4.5.0/cura/CuraApplication.py
---- Cura-4.5.0.org/cura/CuraApplication.py	2020-02-25 16:16:45.000000000 +0100
-+++ Cura-4.5.0/cura/CuraApplication.py	2021-03-03 12:45:56.861128898 +0100
-@@ -735,6 +735,7 @@ class CuraApplication(QtApplication):
+--- Cura-4.13.2/cura/CuraApplication.py.orig	2024-09-27 18:42:08.796126936 +0200
++++ Cura-4.13.2/cura/CuraApplication.py	2024-09-27 18:43:51.602236655 +0200
+@@ -778,6 +778,7 @@ class CuraApplication(QtApplication):
              lib_suffixes = {""}
          for suffix in lib_suffixes:
              self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "lib" + suffix, "cura"))
 +        self._plugin_registry.addPluginLocation(os.path.join(QtApplication.getInstallPrefix(), "share", "cura"))
+ 
          if not hasattr(sys, "frozen"):
              self._plugin_registry.addPluginLocation(os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "plugins"))
-             self._plugin_registry.loadPlugin("ConsoleLogger")
