@@ -3,7 +3,7 @@ Summary(pl.UTF-8):	Oprogramowanie do sterowania drukarkami 3D
 Name:		cura
 # keep in sync with CuraEngine, libArgus, libSavitar, python3-Uranium
 Version:	4.13.2
-Release:	
+Release:	2
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
@@ -70,7 +70,7 @@ modyfikowalnymi ustawieniami i wysyłać go do drukarki 3D.
 
 %prep
 %setup -q -n Cura-%{version} -a1
-%patch0 -p1
+%patch -P 0 -p1
 
 for bad_lang in cs_CZ de_DE es_ES fi_FI fr_FR hu_HU it_IT ja_JP ko_KR nl_NL pl_PL pt_PT ru_RU tr_TR ; do
 	lang="$(echo $bad_lang | sed 's/_.*//')"
