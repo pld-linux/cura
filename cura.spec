@@ -3,7 +3,7 @@ Summary(pl.UTF-8):	Oprogramowanie do sterowania drukarkami 3D
 Name:		cura
 # keep in sync with CuraEngine, libArgus, libSavitar, python3-Uranium
 Version:	4.13.2
-Release:	3
+Release:	4
 Epoch:		1
 Group:		Applications/Engineering
 # Code is AGPLv3
